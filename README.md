@@ -17,8 +17,8 @@ which requires us to mount the certificate to the app container.
 ## Guide
 
 **NOTE:**  
-The guide uses the default directory/file paths used by the sample app!
-If you want to the paths, make sure to change them everywhere they're needed.
+The guide uses the sample app's default directory/file paths!
+If you want to use different paths, make sure to change them everywhere they're needed.
 
 1. Navigate to [Azure Portal](https://portal.azure.com) and validate that you have the required
    Subscription and Storage Account.
@@ -34,6 +34,9 @@ If you want to the paths, make sure to change them everywhere they're needed.
    You'll need these later when configuring the sample app.
 
     ![](./pics/app_registration_2.jpg)
+
+    - Your application's service principal can be accessed by following the
+      _"Managed application in local directory"_ link.
 
 1. Run the [`create-certs.sh`](./create-certs.sh) script in the repo's root directory.
    The script will create a certificate and a private key with the `openssl` command,
@@ -56,25 +59,24 @@ If you want to the paths, make sure to change them everywhere they're needed.
     - The uploaded `azure_sp_cert.pem` should ONLY contain `BEGIN CERTIFICATE` and NOT `BEGIN PRIVATE KEY`!
     - If you want to use secret-based authentication, you can create a new secret under the _"Client secrets"_ tab.
 
-1. **At this stage, the sample app should now be able to perform authentication using
-   the service principal!**
-   The application does not have any role assignments,
+1. **At this stage, the authentication setup on Azure's side should be ready!**
+   Please note that the application's service principal does not have any role assignments,
    so it cannot yet access Azure resources because of it.
 
 1. In Azure Portal, navigate to _"Storage accounts"_ and select the Storage Account you want to use.
-   Under the Storage Account, select _"Access Control (IAM)"_ and a new role assignment to your
-   application with _"Add"_ / _"Add role assignment"_.
+   Under the Storage Account, select _"Access Control (IAM)"_ and add a new role assignment to your
+   application's service principal with _"Add"_ / _"Add role assignment"_.
    Make sure the role provides access to the Blob Storage (e.g. _"Storage Blob Data Contributor"_).
 
     ![](./pics/blob_storage_iam.jpg)
 
     - In this guide, we use the built-in role _"Storage Blob Data Contributor"_.
-      If you want your application to have a more fine-grained role,
+      If you want your service principal to have a more fine-grained role,
       you should create a new role that only has permissions that the application needs.
     - In this guide, we added the role assignment to the scope of the whole Storage Account.
       The role assignment scope can also be limited to a single container if that's desired.
 
-1. Now it's time for the sample app to authenticate as the application we created in Azure Portal.
+1. **Now it's time for the sample app to authenticate as the application using the service principal!**
    Create a `.env` file, insert the following template to the file and fill in the values.
 
     ```
@@ -92,6 +94,13 @@ If you want to the paths, make sure to change them everywhere they're needed.
     STORAGE_BLOB_CONTAINER="<Blob container name>"
     ```
 
+   - The sample app uses `DefaultAzureCredential` from `@azure/identity`,
+     but under the hood the default credential uses `EnvironmentCredential`,
+     which could also be used directly in the code.
+   - Links:
+       - [`DefaultAzureCredential`](https://learn.microsoft.com/en-us/javascript/api/@azure/identity/defaultazurecredential): Authentication flow and types
+       - [`EnvironmentCredential`](https://learn.microsoft.com/en-us/javascript/api/%40azure/identity/environmentcredential): Supported environment variables.
+
 1. Run the sample app with `docker compose up`.
    The app tries to authenticate using the service principal and
    upload a single blob to the configured Blob Storage.
@@ -106,10 +115,6 @@ If you want to the paths, make sure to change them everywhere they're needed.
     azure-auth-on-prem-sp-app-1  | Shutdown
     azure-auth-on-prem-sp-app-1 exited with code 0
     ```
-
-    - The sample app uses `DefaultAzureCredential` from `@azure/identity`,
-      but under the hood the default credential uses `EnvironmentCredential`,
-      which could also be used directly in the code.
 
 1. As the result, the blob from the previous step should now be visible in the Blob Storage!
 
