@@ -143,3 +143,5 @@ If you want to the paths, make sure to change them everywhere they're needed.
     azure-auth-on-prem-sp-app-1  |   }
     azure-auth-on-prem-sp-app-1  | }
     ```
+
+    - There might be a small delay on Azure's side after the role assignment has been removed.
