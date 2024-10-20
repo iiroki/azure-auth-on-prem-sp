@@ -1,0 +1,9 @@
+services:
+  azure-auth-on-prem-sp-app:
+    build: azure-auth-on-prem-sp-app/
+    env_file:
+      - .env
+    volumes:
+      - type: bind
+        source: ./certs/azure_sp.pem
+        target: /azure_sp.pem
