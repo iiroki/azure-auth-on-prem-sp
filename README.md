@@ -17,7 +17,7 @@ which requires us to mount the certificate to the app container.
 ## Guide
 
 **NOTE:**  
-The guide uses the default directory/file paths!
+The guide uses the default directory/file paths used by the sample app!
 If you want to the paths, make sure to change them everywhere they're needed.
 
 1. Navigate to [Azure Portal](https://portal.azure.com) and validate that you have the required
@@ -27,7 +27,8 @@ If you want to the paths, make sure to change them everywhere they're needed.
 
     ![](./pics/app_registration_1.jpg)
 
-    - You can also use an existing app registration, if the app you want to authenticate with already exists.
+    - You can also use an existing app registration,
+      if the application you want to authenticate with already exists.
 
 1. After the app registration creation, you should see its client ID and tenant ID.
    You'll need these later when configuring the sample app.
